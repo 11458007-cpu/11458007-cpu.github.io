@@ -1,15 +1,66 @@
-# 30 秒打地鼠遊戲
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手機遊戲</title>
+<style>
+body{background:#111;color:#fff;text-align:center;font-family:sans-serif}
+button{padding:10px;margin:10px}
+canvas{background:#000}
+</style>
+</head>
+<body>
 
-這是一個純前端的小遊戲，遊戲時間固定 30 秒。
+<h2>選擇遊戲</h2>
+<button onclick="startMole()">打地鼠</button>
+<button onclick="startSnake()">貪食蛇</button>
 
-## 如何開始
+<p>分數: <span id="score">0</span></p>
+<canvas id="c" width="300" height="300"></canvas>
 
-1. 在檔案總管中打開 `index.html`。
-2. 按下「開始遊戲」。
-3. 30 秒內盡量點擊冒出來的地鼠。
+<script>
+let c=document.getElementById("c");
+let ctx=c.getContext("2d");
+let score=0;
 
-## 規則
+function startMole(){
+ setInterval(()=>{
+  ctx.clearRect(0,0,300,300);
+  let x=Math.random()*260;
+  let y=Math.random()*260;
+  ctx.beginPath();
+  ctx.arc(x,y,20,0,Math.PI*2);
+  ctx.fillStyle="brown";
+  ctx.fill();
+  c.onclick=()=>{score++;document.getElementById("score").innerText=score;}
+ },800);
+}
 
-- 每打到一隻地鼠 +1 分。
-- 倒數結束後顯示本次分數。
-- 最高分會儲存在瀏覽器本機（localStorage）。
+let snake=[{x:150,y:150}],dx=20,dy=0,food={x:60,y:60};
+
+function startSnake(){
+ document.onkeydown=e=>{
+  if(e.key==="ArrowUp"){dx=0;dy=-20}
+  if(e.key==="ArrowDown"){dx=0;dy=20}
+  if(e.key==="ArrowLeft"){dx=-20;dy=0}
+  if(e.key==="ArrowRight"){dx=20;dy=0}
+ }
+ setInterval(()=>{
+  ctx.clearRect(0,0,300,300);
+  let head={x:snake[0].x+dx,y:snake[0].y+dy};
+  snake.unshift(head);
+  if(head.x===food.x && head.y===food.y){
+   score++;
+   food={x:Math.random()*280,y:Math.random()*280};
+  }else snake.pop();
+  ctx.fillStyle="lime";
+  snake.forEach(s=>ctx.fillRect(s.x,s.y,15,15));
+  ctx.fillStyle="red";
+  ctx.fillRect(food.x,food.y,15,15);
+ },150);
+}
+</script>
+
+</body>
+</html>
