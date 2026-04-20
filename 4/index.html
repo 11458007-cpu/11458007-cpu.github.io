@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>聊天機器人</title>
+    <style>
+        :root {
+            --bg: #04070d;
+            --panel: #0d1620;
+            --panel-2: #0b1219;
+            --border: #123042;
+            --text: #e8f5ff;
+            --muted: #9db9cd;
+            --bubble: #0b2734;
+            --accent-a: #3eb7ff;
+            --accent-b: #ff8a2d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #11263d 0%, var(--bg) 42%);
+            color: var(--text);
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            display: grid;
+            place-items: center;
+            padding: 12px;
+        }
+
+        .app {
+            width: min(100%, 430px);
+            height: min(100vh - 24px, 900px);
+            background: linear-gradient(180deg, #09131d 0%, #060b11 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+        }
+
+        .top h1 {
+            font-size: 48px;
+            line-height: 1;
+            letter-spacing: 0.02em;
+            margin-bottom: 8px;
+        }
+
+        .top p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .api-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+        }
+
+        .input,
+        .select,
+        .prompt,
+        .send {
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #05090f;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .input,
+        .select {
+            height: 42px;
+            padding: 0 12px;
+            outline: none;
+        }
+
+        .input::placeholder,
+        .prompt::placeholder {
+            color: #7895ab;
+        }
+
+        .select {
+            min-width: 110px;
+            background: #0d2534;
+            color: #d4efff;
+        }
+
+        .chat {
+            flex: 1;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .msg {
+            max-width: 92%;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            padding: 10px 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 15px;
+        }
+
+        .bot {
+            background: linear-gradient(180deg, #0b2c3c 0%, #0b2533 100%);
+            border: 1px solid #123b4f;
+        }
+
+        .user {
+            margin-left: auto;
+            background: linear-gradient(180deg, #17324a 0%, #14263a 100%);
+            border: 1px solid #234e6f;
+        }
+
+        .composer {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+        }
+
+        .prompt {
+            min-height: 60px;
+            max-height: 160px;
+            resize: vertical;
+            padding: 10px 12px;
+            outline: none;
+            line-height: 1.4;
+        }
+
+        .send {
+            align-self: stretch;
+            padding: 0 16px;
+            background: linear-gradient(120deg, var(--accent-a), var(--accent-b));
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 90px;
+        }
+
+        .send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .hint {
+            color: #89a8bf;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        @media (max-width: 440px) {
+            .app {
+                height: calc(100vh - 12px);
+                border-radius: 12px;
+                padding: 10px;
+            }
+
+            .top h1 {
+                font-size: 48px;
+            }
+
+            .prompt {
+                min-height: 58px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="app">
+        <header class="top">
+            <h1>聊天機器人</h1>
+            <p>使用 Gemini 2.5 Flash，先輸入 API Key 再送出問題。</p>
+        </header>
+
+        <section class="api-row">
+            <input id="apiKey" class="input" type="password" placeholder="輸入 Gemini API Key" autocomplete="off">
+            <select id="model" class="select">
+                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+            </select>
+        </section>
+
+        <section id="chat" class="chat">
+            <article class="msg bot">你好，我是 Gemini 聊天機器人。請先輸入 API Key，再輸入你的問題。</article>
+        </section>
+
+        <section class="composer">
+            <textarea id="prompt" class="prompt" placeholder="輸入你的問題...（按 Enter 換行，Ctrl+Enter 可送出）"></textarea>
+            <button id="send" class="send" type="button">送出訊息</button>
+        </section>
+
+        <p class="hint">請注意：API Key 只存在本頁面，不會儲存到伺服器。</p>
+    </main>
+
+    <script>
+        const chatEl = document.getElementById("chat");
+        const keyEl = document.getElementById("apiKey");
+        const modelEl = document.getElementById("model");
+        const promptEl = document.getElementById("prompt");
+        const sendEl = document.getElementById("send");
+
+        function appendMessage(text, role) {
+            const msg = document.createElement("article");
+            msg.className = `msg ${role}`;
+            msg.textContent = text;
+            chatEl.appendChild(msg);
+            chatEl.scrollTop = chatEl.scrollHeight;
+            return msg;
+        }
+
+        async function sendMessage() {
+            const apiKey = keyEl.value.trim();
+            const model = modelEl.value;
+            const prompt = promptEl.value.trim();
+
+            if (!apiKey) {
+                appendMessage("請先輸入 API Key。", "bot");
+                return;
+            }
+
+            if (!prompt) {
+                appendMessage("請先輸入問題。", "bot");
+                return;
+            }
+
+            appendMessage(prompt, "user");
+            promptEl.value = "";
+
+            const loadingEl = appendMessage("思考中...", "bot");
+            sendEl.disabled = true;
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [{ text: prompt }]
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    const message = data?.error?.message || "API 呼叫失敗，請檢查 Key 或模型。";
+                    throw new Error(message);
+                }
+
+                const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "沒有回應內容。";
+                loadingEl.textContent = reply;
+            } catch (error) {
+                loadingEl.textContent = `發生錯誤：${error.message}`;
+            } finally {
+                sendEl.disabled = false;
+                promptEl.focus();
+            }
+        }
+
+        sendEl.addEventListener("click", sendMessage);
+
+        promptEl.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && event.ctrlKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
