@@ -1,66 +1,216 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>手機遊戲</title>
-<style>
-body{background:#111;color:#fff;text-align:center;font-family:sans-serif}
-button{padding:10px;margin:10px}
-canvas{background:#000}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蘇苡樂的作品集</title>
+    <style>
+        :root {
+            --bg-1: #06080f;
+            --bg-2: #0e1324;
+            --text-main: #edf3ff;
+            --text-muted: #a8b5d6;
+            --card-bg: rgba(10, 16, 32, 0.72);
+            --card-border: rgba(152, 187, 255, 0.28);
+            --rainbow: linear-gradient(90deg, #ff3b30, #ff9500, #ffd60a, #34c759, #0a84ff, #5856d6, #ff2d55);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            min-height: 100vh;
+            color: var(--text-main);
+            background:
+                radial-gradient(1200px 500px at 15% -15%, rgba(37, 98, 228, 0.35), transparent 52%),
+                radial-gradient(900px 480px at 100% 105%, rgba(255, 75, 140, 0.25), transparent 48%),
+                linear-gradient(170deg, var(--bg-1), var(--bg-2));
+            padding: 28px 18px 40px;
+        }
+
+        .wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 26px;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            letter-spacing: 0.02em;
+            margin-bottom: 10px;
+            background: var(--rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 8px 30px rgba(98, 131, 255, 0.25));
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: clamp(0.98rem, 2vw, 1.15rem);
+        }
+
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 18px;
+            padding: 22px 18px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out both;
+            transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+        }
+
+        .card:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 0.16s;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 4px;
+            background: var(--rainbow);
+            opacity: 0.9;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(201, 220, 255, 0.58);
+            box-shadow: 0 22px 38px rgba(0, 0, 0, 0.45);
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 30px;
+            margin-bottom: 14px;
+            background: linear-gradient(160deg, rgba(57, 95, 170, 0.45), rgba(35, 55, 110, 0.28));
+            border: 1px solid rgba(167, 197, 255, 0.36);
+        }
+
+        .title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .num {
+            font-size: 0.95rem;
+            color: #7fb0ff;
+            font-weight: 700;
+        }
+
+        .name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #f1f6ff;
+        }
+
+        .desc {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.96rem;
+            margin-bottom: 14px;
+            min-height: 3.1em;
+        }
+
+        .go {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #ffffff;
+            background: linear-gradient(90deg, #266cff, #47a7ff);
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
+
+        footer {
+            text-align: center;
+            color: #7f8fb4;
+            margin-top: 28px;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="wrap">
+        <header class="hero">
+            <h1>蘇苡樂的作品集</h1>
+            <p>精選互動作品：點選進入 1、2、3 各專案</p>
+        </header>
 
-<h2>選擇遊戲</h2>
-<button onclick="startMole()">打地鼠</button>
-<button onclick="startSnake()">貪食蛇</button>
+        <main class="projects">
+            <a class="card" href="1/">
+                <div class="icon" aria-hidden="true">🐹</div>
+                <div class="title-row">
+                    <span class="num">作品 1</span>
+                    <span class="name">打地鼠</span>
+                </div>
+                <p class="desc">30 秒挑戰模式，打中加分、附音效，支援手機操作。</p>
+                <span class="go">前往作品 1 →</span>
+            </a>
 
-<p>分數: <span id="score">0</span></p>
-<canvas id="c" width="300" height="300"></canvas>
+            <a class="card" href="2/">
+                <div class="icon" aria-hidden="true">🐍</div>
+                <div class="title-row">
+                    <span class="num">作品 2</span>
+                    <span class="name">貪吃蛇</span>
+                </div>
+                <p class="desc">經典蛇遊戲，含速度變化與音效，支援手機觸控方向鍵。</p>
+                <span class="go">前往作品 2 →</span>
+            </a>
 
-<script>
-let c=document.getElementById("c");
-let ctx=c.getContext("2d");
-let score=0;
+            <a class="card" href="3/">
+                <div class="icon" aria-hidden="true">🧮</div>
+                <div class="title-row">
+                    <span class="num">作品 3</span>
+                    <span class="name">工程計算機</span>
+                </div>
+                <p class="desc">支援函數、冪次、括號與 DEG/RAD 切換的工程計算器。</p>
+                <span class="go">前往作品 3 →</span>
+            </a>
+        </main>
 
-function startMole(){
- setInterval(()=>{
-  ctx.clearRect(0,0,300,300);
-  let x=Math.random()*260;
-  let y=Math.random()*260;
-  ctx.beginPath();
-  ctx.arc(x,y,20,0,Math.PI*2);
-  ctx.fillStyle="brown";
-  ctx.fill();
-  c.onclick=()=>{score++;document.getElementById("score").innerText=score;}
- },800);
-}
-
-let snake=[{x:150,y:150}],dx=20,dy=0,food={x:60,y:60};
-
-function startSnake(){
- document.onkeydown=e=>{
-  if(e.key==="ArrowUp"){dx=0;dy=-20}
-  if(e.key==="ArrowDown"){dx=0;dy=20}
-  if(e.key==="ArrowLeft"){dx=-20;dy=0}
-  if(e.key==="ArrowRight"){dx=20;dy=0}
- }
- setInterval(()=>{
-  ctx.clearRect(0,0,300,300);
-  let head={x:snake[0].x+dx,y:snake[0].y+dy};
-  snake.unshift(head);
-  if(head.x===food.x && head.y===food.y){
-   score++;
-   food={x:Math.random()*280,y:Math.random()*280};
-  }else snake.pop();
-  ctx.fillStyle="lime";
-  snake.forEach(s=>ctx.fillRect(s.x,s.y,15,15));
-  ctx.fillStyle="red";
-  ctx.fillRect(food.x,food.y,15,15);
- },150);
-}
-</script>
-
+        <footer>© 2026 蘇苡樂 | Portfolio</footer>
+    </div>
 </body>
 </html>

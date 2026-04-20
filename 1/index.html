@@ -3,106 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蘇苡樂 | SU YI LE - 作品集主頁</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <title>打地鼠 - 遊戲</title>
     <style>
-        :root {
-            --bg: #111111;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent: #ff3e00;
-            --green-gradient: linear-gradient(135deg, #a7f3d0 0%, #34d399 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans TC', sans-serif; }
-
+        
         body {
-            background-color: var(--bg);
-            color: var(--text-primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #1a3a0a 100%);
             min-height: 100vh;
-            padding: 2rem 1rem;
-        }
-
-        /* 頂部標題 */
-        .main-header {
-            font-size: 1rem;
-            color: var(--text-primary);
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        /* 作品集區域 */
-        .portfolio-grid {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .portfolio-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            text-decoration: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .portfolio-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-        }
-
-        .card-image {
-            height: 120px;
-            width: 100%;
-            background: var(--green-gradient);
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
+            padding: 20px;
         }
-
-        .card-image-pattern {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
+        
+        .container {
+            background: rgb(45, 80, 22);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
-
-        .card-content {
-            padding: 1.5rem;
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .creator {
+            font-size: 0.9em;
+            color: #ddd;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stats {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            justify-content: space-around;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-
-        .card-title { font-size: 1.5rem; font-weight: 900; color: var(--text-primary); }
-        .card-desc { font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary); }
+        
+        .stat {
+            background: rgba(255, 165, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        #startBtn {
+            background: linear-gradient(135deg, #ff6b00, #ff9500);
+            color: white;
+        }
+        
+        #startBtn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+        }
+        
+        #startBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .sound-toggle {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .sound-toggle button {
+            padding: 10px 15px;
+            background: #4a7c1c;
+            color: white;
+        }
+        
+        .sound-toggle button.active {
+            background: #ff6b00;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .hole {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #7fb84f, #5ca631);
+            border: 8px solid #3d6820;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.1s ease;
+        }
+        
+        .hole:active {
+            transform: scale(0.95);
+        }
+        
+        .mole {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            pointer-events: none;
+        }
+        
+        .hole.active .mole {
+            opacity: 1;
+        }
+        
+        .info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95em;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #bbb;
+            font-size: 0.9em;
+        }
+        
+        a {
+            color: #ff9500;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .creator {
+                font-size: 0.8em;
+            }
+            
+            .stats {
+                gap: 5px;
+            }
+            
+            .stat {
+                padding: 8px 12px;
+                font-size: 0.85em;
+                min-width: 70px;
+            }
+            
+            .stat-label {
+                font-size: 0.75em;
+            }
+            
+            .stat-value {
+                font-size: 1.2em;
+                margin-top: 3px;
+            }
+            
+            .controls {
+                gap: 5px;
+                flex-direction: column;
+            }
+            
+            #startBtn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+                width: 100%;
+            }
+            
+            .sound-toggle {
+                gap: 5px;
+                width: 100%;
+            }
+            
+            .sound-toggle button {
+                flex: 1;
+                padding: 10px 10px;
+                font-size: 0.8em;
+            }
+            
+            .game-board {
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .hole {
+                border: 6px solid #3d6820;
+            }
+            
+            .mole {
+                font-size: 2.5em;
+            }
+            
+            .info {
+                padding: 12px;
+                font-size: 0.85em;
+            }
+            
+            .footer {
+                margin-top: 15px;
+                font-size: 0.85em;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 10px;
+            }
+            
+            .creator {
+                font-size: 0.75em;
+                margin-bottom: 5px;
+            }
+            
+            .stat {
+                padding: 6px 10px;
+                font-size: 0.75em;
+                min-width: 60px;
+            }
+            
+            .stat-value {
+                font-size: 1em;
+            }
+            
+            .controls {
+                gap: 3px;
+            }
+            
+            .sound-toggle button {
+                font-size: 0.7em;
+                padding: 8px 8px;
+            }
+            
+            .game-board {
+                gap: 8px;
+                padding: 8px;
+            }
+            
+            .mole {
+                font-size: 2em;
+            }
+            
+            .info {
+                padding: 10px;
+                font-size: 0.8em;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <header class="main-header">蘇苡樂的 GitHub 作品集</header>
-
-    <div class="portfolio-grid">
-        <a href="game-info.html" class="portfolio-card">
-            <div class="card-image">
-                <div class="card-image-pattern"></div>
+    <div class="container">
+        <div class="header">
+            <div class="creator">創作者：蘇苡樂</div>
+            <h1>🐹 打地鼠</h1>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">分數</div>
+                <div class="stat-value" id="score">0</div>
             </div>
-            <div class="card-content">
-                <div class="card-title">遊戲專案合輯：貪食蛇 & 打地鼠</div>
-                <div class="card-desc">探索兩個經典像素遊戲的互動詳情。</div>
+            <div class="stat">
+                <div class="stat-label">時間</div>
+                <div class="stat-value" id="timer">30s</div>
             </div>
-        </a>
+            <div class="stat">
+                <div class="stat-label">最高分</div>
+                <div class="stat-value" id="highScore">0</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn" onclick="startGame()">開始遊戲</button>
+            <div class="sound-toggle">
+                <button id="musicBtn" class="active" onclick="toggleMusic()">🎵 音樂: 開</button>
+                <button id="soundBtn" class="active" onclick="toggleSound()">🔊 音效: 開</button>
+            </div>
+        </div>
+        
+        <div class="game-board" id="gameBoard">
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+            <div class="hole" onclick="hitMole(this)">
+                <div class="mole">🐹</div>
+            </div>
+        </div>
+        
+        <div class="info">
+            <p>點「開始遊戲」後，地鼠會隨機出現</p>
+            <p>打到地鼠就會獲得1分，遊戲持續30秒</p>
+            <p>💡 提示: 鍵盤空白鍵也能打地鼠</p>
+        </div>
+        
+        <div class="footer">
+            <a href="../">← 回首頁</a>
+        </div>
     </div>
-
+    
+    <script>
+        let gameActive = false;
+        let score = 0;
+        let timeLeft = 30;
+        let highScore = localStorage.getItem('moleHighScore') || 0;
+        let musicEnabled = true;
+        let soundEnabled = true;
+        let activeMoleTimeout = null;
+        let gameTimer = null;
+        
+        const holes = document.querySelectorAll('.hole');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const highScoreDisplay = document.getElementById('highScore');
+        const startBtn = document.getElementById('startBtn');
+        
+        // 初始化高分顯示
+        highScoreDisplay.textContent = highScore;
+        
+        // 音効生成
+        function playSound(type) {
+            if (!soundEnabled) return;
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            if (type === 'hit') {
+                // 爆炸音效
+                const now = audioContext.currentTime;
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
+                
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                osc.start(now);
+                osc.stop(now + 0.1);
+            }
+        }
+        
+        // 播放背景音樂
+        function playBackgroundMusic() {
+            if (!musicEnabled) return;
+            // 簡單的蜂鳴聲作為背景音樂線索
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.frequency.setValueAtTime(200, now);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+        
+        // 顯示地鼠
+        function showMole() {
+            if (!gameActive) return;
+            
+            // 隐藏所有地鼠
+            holes.forEach(hole => hole.classList.remove('active'));
+            
+            // 随机选择一个孔
+            const randomHole = holes[Math.floor(Math.random() * holes.length)];
+            randomHole.classList.add('active');
+            
+            // 播放背景音乐
+            playBackgroundMusic();
+            
+            // 0.8秒后隐藏地鼠
+            if (activeMoleTimeout) clearTimeout(activeMoleTimeout);
+            activeMoleTimeout = setTimeout(() => {
+                randomHole.classList.remove('active');
+                setTimeout(showMole, 300); // 延迟后显示下一只地鼠
+            }, 800);
+        }
+        
+        // 敲地鼠
+        function hitMole(hole) {
+            if (!gameActive) return;
+            if (!hole.classList.contains('active')) return;
+            
+            score++;
+            scoreDisplay.textContent = score;
+            hole.classList.remove('active');
+            
+            // 播放音效
+            playSound('hit');
+            
+            // 添加视觉反馈
+            hole.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                hole.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
+        // 当打不中时扣分
+        document.addEventListener('keydown', (e) => {
+            if (gameActive && (e.code === 'Space' || e.key === ' ')) {
+                e.preventDefault();
+                const activeMole = document.querySelector('.hole.active');
+                if (activeMole) {
+                    hitMole(activeMole);
+                }
+            }
+        });
+        
+        // 开始游戏
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            score = 0;
+            timeLeft = 30;
+            scoreDisplay.textContent = score;
+            timerDisplay.textContent = timeLeft + 's';
+            startBtn.disabled = true;
+            
+            // 显示第一只地鼠
+            showMole();
+            
+            // 倒计时
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft + 's';
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        // 游戏结束
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            if (activeMoleTimeout) clearTimeout(activeMoleTimeout);
+            
+            holes.forEach(hole => hole.classList.remove('active'));
+            startBtn.disabled = false;
+            
+            // 更新高分
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('moleHighScore', highScore);
+                highScoreDisplay.textContent = highScore;
+            }
+            
+            alert(`遊戲結束！\n分數: ${score}\n最高分: ${highScore}`);
+        }
+        
+        // 切换音乐
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            const musicBtn = document.getElementById('musicBtn');
+            musicBtn.textContent = musicEnabled ? '🎵 音樂: 開' : '🎵 音樂: 關';
+            musicBtn.classList.toggle('active');
+        }
+        
+        // 切换音效
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const soundBtn = document.getElementById('soundBtn');
+            soundBtn.textContent = soundEnabled ? '🔊 音效: 開' : '🔊 音效: 關';
+            soundBtn.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>

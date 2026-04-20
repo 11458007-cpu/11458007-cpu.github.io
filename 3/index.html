@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>有函數的工程計算機</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 14px;
+            font-family: "Noto Sans TC", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(1200px 500px at 20% -10%, #274f8d 0%, transparent 50%),
+                radial-gradient(900px 500px at 90% 110%, #0a2c62 0%, transparent 45%),
+                linear-gradient(180deg, #051022 0%, #020816 100%);
+            color: #dbe9ff;
+        }
+
+        .calculator {
+            width: min(100%, 360px);
+            background: linear-gradient(180deg, #07152c 0%, #030a18 100%);
+            border: 1px solid rgba(103, 162, 255, 0.35);
+            border-radius: 18px;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.55);
+            padding: 14px;
+        }
+
+        .designer {
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            color: #9eb8e9;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .display {
+            min-height: 72px;
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: linear-gradient(180deg, #09111d 0%, #040912 100%);
+            border: 1px solid rgba(143, 193, 255, 0.25);
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .mode {
+            font-size: 11px;
+            color: #8eb4f2;
+            text-align: right;
+        }
+
+        #display {
+            text-align: right;
+            font-size: clamp(24px, 6vw, 30px);
+            line-height: 1.2;
+            font-weight: 700;
+            color: #e7f2ff;
+            word-break: break-all;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .btn {
+            height: 52px;
+            border: 1px solid rgba(170, 205, 255, 0.14);
+            border-radius: 14px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #dce9ff;
+            background: linear-gradient(180deg, #171d46 0%, #111839 100%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: transform 0.08s ease, filter 0.15s ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+            filter: brightness(1.1);
+        }
+
+        .btn.small {
+            font-size: 18px;
+            font-weight: 650;
+        }
+
+        .btn.fn {
+            background: linear-gradient(180deg, #1a2149 0%, #12193d 100%);
+        }
+
+        .btn.op {
+            background: linear-gradient(180deg, #11253f 0%, #0d1f36 100%);
+            color: #c9e9ff;
+        }
+
+        .btn.equal {
+            background: linear-gradient(180deg, #78d8ff 0%, #56bef2 100%);
+            color: #08233a;
+            border-color: rgba(175, 238, 255, 0.55);
+        }
+
+        .footer {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #8fbaff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 390px) {
+            .calculator {
+                width: min(100%, 340px);
+                padding: 12px;
+            }
+
+            .btn {
+                height: 48px;
+                border-radius: 12px;
+                font-size: 25px;
+            }
+
+            .btn.small {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="calculator">
+        <div class="designer">設計者：蘇苡樂</div>
+
+        <section class="display">
+            <div class="mode" id="modeText">MODE: DEG</div>
+            <div id="display">0</div>
+        </section>
+
+        <section class="keys">
+            <button class="btn fn small" onclick="clearDisplay()">C</button>
+            <button class="btn fn small" onclick="deleteLastChar()">⌫</button>
+            <button class="btn fn" onclick="appendOperator('(')">(</button>
+            <button class="btn fn" onclick="appendOperator(')')">)</button>
+
+            <button class="btn fn small" onclick="appendFunction('sin')">sin</button>
+            <button class="btn fn small" onclick="appendFunction('cos')">cos</button>
+            <button class="btn fn small" onclick="appendFunction('tan')">tan</button>
+            <button class="btn op small" onclick="toggleMode()">DEG/RAD</button>
+
+            <button class="btn fn small" onclick="appendFunction('asin')">asin</button>
+            <button class="btn fn small" onclick="appendFunction('acos')">acos</button>
+            <button class="btn fn small" onclick="appendFunction('atan')">atan</button>
+            <button class="btn op small" onclick="appendOperator('^')">x^y</button>
+
+            <button class="btn fn small" onclick="appendFunction('sqrt')">sqrt</button>
+            <button class="btn fn small" onclick="appendFunction('log')">log</button>
+            <button class="btn fn small" onclick="appendFunction('ln')">ln</button>
+            <button class="btn op" onclick="appendOperator('÷')">÷</button>
+
+            <button class="btn" onclick="appendNumber('7')">7</button>
+            <button class="btn" onclick="appendNumber('8')">8</button>
+            <button class="btn" onclick="appendNumber('9')">9</button>
+            <button class="btn op" onclick="appendOperator('×')">×</button>
+
+            <button class="btn" onclick="appendNumber('4')">4</button>
+            <button class="btn" onclick="appendNumber('5')">5</button>
+            <button class="btn" onclick="appendNumber('6')">6</button>
+            <button class="btn op" onclick="appendOperator('-')">−</button>
+
+            <button class="btn" onclick="appendNumber('1')">1</button>
+            <button class="btn" onclick="appendNumber('2')">2</button>
+            <button class="btn" onclick="appendNumber('3')">3</button>
+            <button class="btn op" onclick="appendOperator('+')">+</button>
+
+            <button class="btn" onclick="appendNumber('π')">π</button>
+            <button class="btn" onclick="appendNumber('0')">0</button>
+            <button class="btn" onclick="appendNumber('.')">.</button>
+            <button class="btn equal" onclick="calculate()">=</button>
+        </section>
+
+        <div class="footer"><a href="../">回首頁</a></div>
+    </main>
+
+    <script>
+        const displayElement = document.getElementById("display");
+        const modeText = document.getElementById("modeText");
+
+        let currentInput = "0";
+        let isDegMode = true;
+        let lastAnswer = 0;
+
+        function updateDisplay() {
+            displayElement.textContent = currentInput;
+        }
+
+        function toggleMode() {
+            isDegMode = !isDegMode;
+            modeText.textContent = isDegMode ? "MODE: DEG" : "MODE: RAD";
+        }
+
+        function appendNumber(num) {
+            const value = num === "π" ? "pi" : num;
+            if (currentInput === "0" && value !== ".") {
+                currentInput = value;
+            } else {
+                if (value === ".") {
+                    const lastPart = currentInput.split(/[+\-*/()^]/).pop();
+                    if (lastPart.includes(".")) {
+                        return;
+                    }
+                }
+                currentInput += value;
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            const map = { "×": "*", "÷": "/", "−": "-", "^": "^" };
+            const normalized = map[op] || op;
+            const lastChar = currentInput.slice(-1);
+            const isOperator = /[+\-*/^]/.test(lastChar);
+
+            if (currentInput === "0" && normalized !== "-") {
+                return;
+            }
+            if (isOperator && /[+\-*/^]/.test(normalized)) {
+                currentInput = currentInput.slice(0, -1) + normalized;
+            } else {
+                currentInput += normalized;
+            }
+            updateDisplay();
+        }
+
+        function appendFunction(name) {
+            const tokenMap = {
+                sin: "sin(",
+                cos: "cos(",
+                tan: "tan(",
+                asin: "asin(",
+                acos: "acos(",
+                atan: "atan(",
+                log: "log(",
+                ln: "ln(",
+                sqrt: "sqrt("
+            };
+            const token = tokenMap[name] || "";
+            if (!token) {
+                return;
+            }
+            if (currentInput === "0") {
+                currentInput = token;
+            } else {
+                currentInput += token;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = "0";
+            updateDisplay();
+        }
+
+        function deleteLastChar() {
+            if (currentInput.length <= 1) {
+                currentInput = "0";
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+            updateDisplay();
+        }
+
+        function preprocessExpression(expr) {
+            let output = expr;
+
+            output = output.replace(/pi/g, `(${Math.PI})`);
+            output = output.replace(/\be\b/g, `(${Math.E})`);
+
+            output = output.replace(/sin\(/g, isDegMode ? "sinDeg(" : "Math.sin(");
+            output = output.replace(/cos\(/g, isDegMode ? "cosDeg(" : "Math.cos(");
+            output = output.replace(/tan\(/g, isDegMode ? "tanDeg(" : "Math.tan(");
+
+            output = output.replace(/asin\(/g, isDegMode ? "asinDeg(" : "Math.asin(");
+            output = output.replace(/acos\(/g, isDegMode ? "acosDeg(" : "Math.acos(");
+            output = output.replace(/atan\(/g, isDegMode ? "atanDeg(" : "Math.atan(");
+
+            output = output.replace(/log\(/g, "Math.log10(");
+            output = output.replace(/ln\(/g, "Math.log(");
+            output = output.replace(/sqrt\(/g, "Math.sqrt(");
+
+            output = output.replace(/\^/g, "**");
+
+            return output;
+        }
+
+        function calculate() {
+            try {
+                const expr = preprocessExpression(currentInput);
+                const result = Function(`return (${expr})`)();
+
+                if (!Number.isFinite(result)) {
+                    throw new Error("Invalid result");
+                }
+
+                lastAnswer = result;
+                currentInput = Number(result.toFixed(12)).toString();
+                updateDisplay();
+            } catch (error) {
+                displayElement.textContent = "錯誤";
+                setTimeout(() => {
+                    currentInput = "0";
+                    updateDisplay();
+                }, 900);
+            }
+        }
+
+        function sinDeg(deg) {
+            return Math.sin((deg * Math.PI) / 180);
+        }
+
+        function cosDeg(deg) {
+            return Math.cos((deg * Math.PI) / 180);
+        }
+
+        function tanDeg(deg) {
+            return Math.tan((deg * Math.PI) / 180);
+        }
+
+        function asinDeg(x) {
+            return (Math.asin(x) * 180) / Math.PI;
+        }
+
+        function acosDeg(x) {
+            return (Math.acos(x) * 180) / Math.PI;
+        }
+
+        function atanDeg(x) {
+            return (Math.atan(x) * 180) / Math.PI;
+        }
+
+        document.addEventListener("keydown", (event) => {
+            const key = event.key;
+
+            if (/[0-9]/.test(key)) {
+                appendNumber(key);
+                return;
+            }
+
+            if (key === ".") {
+                appendNumber(".");
+                return;
+            }
+
+            if (key === "+") {
+                appendOperator("+");
+                return;
+            }
+
+            if (key === "-") {
+                appendOperator("-");
+                return;
+            }
+
+            if (key === "*") {
+                appendOperator("×");
+                return;
+            }
+
+            if (key === "/") {
+                event.preventDefault();
+                appendOperator("÷");
+                return;
+            }
+
+            if (key === "^") {
+                appendOperator("^");
+                return;
+            }
+
+            if (key === "(") {
+                appendOperator("(");
+                return;
+            }
+
+            if (key === ")") {
+                appendOperator(")");
+                return;
+            }
+
+            if (key === "Enter" || key === "=") {
+                event.preventDefault();
+                calculate();
+                return;
+            }
+
+            if (key === "Backspace") {
+                event.preventDefault();
+                deleteLastChar();
+                return;
+            }
+
+            if (key === "Escape") {
+                clearDisplay();
+                return;
+            }
+
+            if (key.toLowerCase() === "p") {
+                appendNumber("π");
+                return;
+            }
+
+            if (key.toLowerCase() === "a") {
+                currentInput = currentInput === "0" ? lastAnswer.toString() : currentInput + lastAnswer.toString();
+                updateDisplay();
+            }
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
