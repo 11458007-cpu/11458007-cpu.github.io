@@ -249,6 +249,7 @@
         const promptEl = document.getElementById("prompt");
         const sendEl = document.getElementById("send");
         const clockEl = document.getElementById("clock");
+        const defaultApiKey = "AIzaSyC_acqo0OyGv9Lph6wOK13L4yWrLtUoC80";
 
         function updateClock() {
             const now = new Date();
@@ -339,6 +340,7 @@
 
         updateClock();
         setInterval(updateClock, 1000);
+        keyEl.value = defaultApiKey;
     </script>
 </body>
 </html>
