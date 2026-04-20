@@ -59,6 +59,25 @@
             letter-spacing: 0.02em;
         }
 
+        .meta-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time {
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: rgba(120, 190, 255, 0.12);
+            border: 1px solid rgba(120, 190, 255, 0.28);
+            color: #cbe6ff;
+            font-size: 12px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
         .top h1 {
             font-size: 48px;
             line-height: 1;
@@ -193,7 +212,10 @@
 </head>
 <body>
     <main class="app">
-        <div class="designer">設計者：蘇苡樂</div>
+        <div class="meta-bar">
+            <div class="designer">設計者：蘇苡樂</div>
+            <div class="time" id="clock">--:--:--</div>
+        </div>
         <header class="top">
             <h1>聊天機器人</h1>
             <p>使用 Gemini 2.5 Flash，先輸入 API Key 再送出問題。</p>
@@ -226,6 +248,22 @@
         const modelEl = document.getElementById("model");
         const promptEl = document.getElementById("prompt");
         const sendEl = document.getElementById("send");
+        const clockEl = document.getElementById("clock");
+
+        function updateClock() {
+            const now = new Date();
+            const parts = [
+                now.getFullYear(),
+                String(now.getMonth() + 1).padStart(2, "0"),
+                String(now.getDate()).padStart(2, "0")
+            ];
+            const time = [
+                String(now.getHours()).padStart(2, "0"),
+                String(now.getMinutes()).padStart(2, "0"),
+                String(now.getSeconds()).padStart(2, "0")
+            ].join(":");
+            clockEl.textContent = `${parts.join("/")} ${time}`;
+        }
 
         function appendMessage(text, role) {
             const msg = document.createElement("article");
@@ -298,6 +336,9 @@
                 sendMessage();
             }
         });
+
+        updateClock();
+        setInterval(updateClock, 1000);
     </script>
 </body>
 </html>
